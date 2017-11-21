@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="Begin_with">Начать с кодом</string>
+    <string name="Begin_without">Начать без кода</string>
+    <string name="Check_Balance">Проверить баланс</string>
+    <string name="Maining">Начать</string>
+    <string name="Balance">Ваш баланс</string>
+    <string-array name="money">
+        <item>Биткоин</item>
+        <item>Не биткоин</item>
+    </string-array>
+</resources>
