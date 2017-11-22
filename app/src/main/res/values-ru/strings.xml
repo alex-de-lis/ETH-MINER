@@ -21,4 +21,7 @@
         <item>English</item>
     </string-array>
     <string name="Save">Сохранить</string>
+    <string name="Your_Adress">Ваш адрес ETH</string>
+    <string name="Your_Money">Ваши средства будут автоматически зачислены на вышеуказанный адрес когда Ваш баланс достигнет 0.5 ETH.</string>
+    <string name="Choose_Int_Lang">Выберите язык интерфейса</string>
 </resources>

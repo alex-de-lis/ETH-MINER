@@ -20,4 +20,7 @@
         <item>English</item>
     </string-array>
     <string name="Save">Save</string>
+    <string name="Your_Adress">Your ETH adress</string>
+    <string name="Your_Money">Your funds will automatically be credited to the above address when your balance reaches 0.5 ETH.</string>
+    <string name="Choose_Int_Lang">Select the interface language</string>
 </resources>

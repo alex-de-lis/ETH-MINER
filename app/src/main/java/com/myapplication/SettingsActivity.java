@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -25,6 +26,7 @@ import okhttp3.Response;
 public class SettingsActivity extends AppCompatActivity {
 
     Button SaveBtn,BackBtn;
+    TextView ETH_Adr,Your_Money,Int_Lang;
     EditText Wallet;
     MediaType JSON;
 
@@ -36,6 +38,9 @@ public class SettingsActivity extends AppCompatActivity {
         SaveBtn=(Button) findViewById(R.id.SaveBtn);
         BackBtn=(Button)findViewById(R.id.BackBtn);
         Wallet=(EditText)findViewById(R.id.Adress);
+        ETH_Adr=(TextView) findViewById(R.id.YourEthAdress);
+        Your_Money=(TextView) findViewById(R.id.SetMes);
+        Int_Lang=(TextView) findViewById(R.id.InterfaceLang);
         String language=getIntent().getStringExtra("Lang");
         if(language.equals("ru")) spinner.setSelection(0);
         else spinner.setSelection(1);
@@ -56,6 +61,9 @@ public class SettingsActivity extends AppCompatActivity {
                 setResult(RESULT_OK, intent);
                 SaveBtn.setText((getResources().getString(R.string.Save)));
                 BackBtn.setText((getResources().getString(R.string.Back)));
+                ETH_Adr.setText((getResources().getString(R.string.Your_Adress)));
+                Your_Money.setText((getResources().getString(R.string.Your_Money)));
+                Int_Lang.setText((getResources().getString(R.string.Choose_Int_Lang)));
             }
             public void onNothingSelected(AdapterView<?> parent) {
             }
