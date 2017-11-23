@@ -2,10 +2,13 @@ package com.myapplication;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
@@ -17,6 +20,7 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -31,31 +35,187 @@ public class MainScreen extends AppCompatActivity {
 
     GraphView graph;
     MediaType JSON;
-    Button btn,CheckBalanceBtn,ShareBtn,SetBtn;
+    Button btn,CheckBalanceBtn,ShareBtn,SetBtn,RateBtn;
     Timer timer;
     int onClick=0;
-    String Balance,promo,ref,mod,Language="ru";
+    String Balance,promo,ref,mod,Language="ru",x,y,PrevBalance,ExtRate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_screen);
-        graph = (GraphView) findViewById(R.id.MyGraph);
-        btn =(Button) findViewById(R.id.PlayBtn);
-        CheckBalanceBtn=(Button) findViewById(R.id.CheckBal);
-        ShareBtn=(Button) findViewById(R.id.ShareBtn);
-        SetBtn=(Button) findViewById(R.id.SetBtn);
-        ChangeLocale(Language);
-        AsyncTaskForGraph task = new AsyncTaskForGraph();
-        task.execute();
-        Intent intent = new Intent(MainScreen.this,MainActivity.class);
-        startActivityForResult(intent,2);
+        String android_id = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+        Encoding(android_id);
+        AsyncTaskCheck check = new AsyncTaskCheck();
+        check.execute();
+        AsyncTaskForRates newTask= new AsyncTaskForRates();
+        newTask.execute();
+    }
+
+    public void ExtRates(View view)
+    {
+        Intent intent = new Intent(MainScreen.this,ExRate.class);
+        intent.putExtra("json",ExtRate);
+        startActivity(intent);
+    }
+
+    private class AsyncTaskForRates extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            String myurl = "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD,EUR,GBP,CHF,CNY,JPY";
+            OkHttpClient client = new OkHttpClient();
+
+            Request request = new Request.Builder()
+                    .url(myurl)
+                    .build();
+            try {
+                Response response = client.newCall(request).execute();
+                return response.body().string();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return e.toString();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result)
+        {
+            ExtRate=result;
+        }
+
+
+        @Override
+        protected void onPreExecute()
+        {
+
+        }
+
+    }
+
+    private class AsyncTaskCheck extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            String myurl = "http://ethonline.site/users/login";
+            String an = "ETH Miner";
+            JSON = MediaType.parse("application/json; charset=utf-8");
+
+            OkHttpClient client = new OkHttpClient();
+            JSONObject postdata = new JSONObject();
+
+            try {
+                postdata.put("x", x);
+                postdata.put("y", y);
+                postdata.put("an", an);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            RequestBody body = RequestBody.create(JSON, postdata.toString());
+            Request request = new Request.Builder()
+                    .url(myurl)
+                    .post(body)
+                    .build();
+            try {
+                Response response = client.newCall(request).execute();
+                return response.body().string();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return e.toString();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if(!result.contains("{\"result\":false}"))
+            {
+                Balance=Params(result,true);
+                PrevBalance=Balance;
+            }
+            else
+            {
+                Intent intent = new Intent(MainScreen.this,MainActivity.class);
+                intent.putExtra("x",x);
+                intent.putExtra("y",y);
+                startActivityForResult(intent,2);
+            }
+            AsyncTaskForGraph task = new AsyncTaskForGraph();
+            task.execute();
+        }
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+    }
+
+    private void Encoding(String MyId)
+    {
+        x = Base64.encodeToString(MyId.getBytes(),Base64.DEFAULT);
+        String temp, FirstResult="",Secondresult="", result="";
+        String alphabit = "abcdefghijklmnopqrstvuwxyz";
+        String digit="0123456789";
+        int i=0,position;
+        char first, second;
+
+        while(i<MyId.length()-1)
+        {
+            first=MyId.charAt(i);
+            second=MyId.charAt(i+1);
+            temp=first+""+second;
+            temp=MyRevers(temp);
+            FirstResult+=temp;
+            i+=2;
+        }
+
+        if(MyId.length()%2!=0)
+        {
+            first=MyId.charAt(i);
+            FirstResult+=first+"";
+        }
+
+        for(i=0;i<FirstResult.length();i++)
+        {
+            first=FirstResult.charAt(i);
+            if(alphabit.contains(first+""))
+            {
+                position=alphabit.length()-alphabit.indexOf(first)-1;
+                second=alphabit.charAt(position);
+                temp=second+"";
+                Secondresult+=temp;
+            }
+            else
+            {
+                position=digit.length()-digit.indexOf(first)-1;
+                second=digit.charAt(position);
+                Secondresult+=second+"";
+            }
+        }
+
+        for(i=0;i<Secondresult.length();i++)
+        {
+            first=Secondresult.charAt(i);
+            temp=first+"";
+            if(alphabit.contains(temp)&&i%2!=0)
+            {
+                result+=temp.toUpperCase();
+            }
+            else result+=temp;
+        }
+        result=MyRevers(result);
+        y = Base64.encodeToString(result.getBytes(),Base64.DEFAULT);
+    }
+
+    private String MyRevers(String s)
+    {
+        return new StringBuilder(s).reverse().toString();
     }
 
     public void Setting(View view)
     {
         Intent intent=new Intent(MainScreen.this,SettingsActivity.class);
         intent.putExtra("Lang",Language);
+        intent.putExtra("x",x);
+        intent.putExtra("y",y);
         startActivityForResult(intent,1);
     }
 
@@ -69,6 +229,7 @@ public class MainScreen extends AppCompatActivity {
         if(requestCode==2)
         {
             Balance=data.getStringExtra("balance");
+            PrevBalance=Balance;
             ref=data.getStringExtra("ref");
             promo=data.getStringExtra("promo");
             mod=data.getStringExtra("mod");
@@ -88,10 +249,12 @@ public class MainScreen extends AppCompatActivity {
 
     void updateView()
     {
-        btn.setText(getResources().getString(R.string.Maining));
+        if(onClick==0) btn.setText(getResources().getString(R.string.Maining));
+        else btn.setText(getResources().getString(R.string.Stop));
         CheckBalanceBtn.setText((getResources().getString(R.string.Check_Balance)));
         ShareBtn.setText((getResources().getString(R.string.Share)));
         SetBtn.setText((getResources().getString(R.string.Settings)));
+        RateBtn.setText((getResources().getString(R.string.Exchange_Rates)));
     }
 
     public void MiningActivity(View view)
@@ -153,8 +316,16 @@ public class MainScreen extends AppCompatActivity {
 
 
         @Override
-        protected void onPreExecute() {
-
+        protected void onPreExecute()
+        {
+            setContentView(R.layout.activity_main_screen);
+            graph = (GraphView) findViewById(R.id.MyGraph);
+            btn =(Button) findViewById(R.id.PlayBtn);
+            CheckBalanceBtn=(Button) findViewById(R.id.CheckBal);
+            ShareBtn=(Button) findViewById(R.id.ShareBtn);
+            SetBtn=(Button) findViewById(R.id.SetBtn);
+            RateBtn=(Button) findViewById(R.id.ERateBtn);
+            ChangeLocale(Language);
         }
 
         private Date StringFormat(String time) {
@@ -193,8 +364,20 @@ public class MainScreen extends AppCompatActivity {
             }
             series.setDrawDataPoints(true);
             graph.addSeries(series);
-            graph.getViewport().setScalable(true);
+            Iterator<DataPoint> iter=series.getValues(series.getLowestValueX(),series.getHighestValueX());
+            for(i=0;i<21;i++)
+            {
+                iter.next();
+            }
+            DataPoint ndp=iter.next();
             graph.getViewport().setScrollable(true);
+            graph.getViewport().setXAxisBoundsManual(true);
+            graph.getViewport().setMinX(ndp.getX());
+            graph.getViewport().setMaxX(series.getHighestValueX());
+
+            graph.getViewport().setYAxisBoundsManual(true);
+            graph.getViewport().setMinY(series.getLowestValueY());
+            graph.getViewport().setMaxY(series.getHighestValueY());
 
             graph.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
                 @Override
@@ -218,8 +401,6 @@ public class MainScreen extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             String myurl = "http://ethonline.site/users/activity";
-            String x = "MWYyYzM0NXQ3NXI1bTB4";
-            String y = "Y045STQyNDRnNjU3eDh2";
             String an = "ETH Miner";
             JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -251,7 +432,16 @@ public class MainScreen extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result)
         {
-            Balance=Params(result);
+            Balance=Params(result, false);
+            Balance=Balance.replace(',','.');
+            float oldBalance=Float.parseFloat(PrevBalance);
+            float NewBalance=Float.parseFloat(Balance);
+            float Def=NewBalance-oldBalance;
+            PrevBalance=Balance;
+            String DefStr=String.format("%.8f", Def);
+            DefStr="+"+DefStr;
+            Toast toast = Toast.makeText(getApplicationContext(),DefStr, Toast.LENGTH_SHORT);
+            toast.show();
         }
 
 
@@ -261,7 +451,7 @@ public class MainScreen extends AppCompatActivity {
         }
     }
 
-    private String Params(String result)
+    private String Params(String result, boolean flag)
     {
         String balance = ",\"balanse\":",End=",\"";
         String Promo="promo_code\":", Ref="\"refs_count\":",Mod="\"modifier\":";
@@ -277,9 +467,12 @@ public class MainScreen extends AppCompatActivity {
         promo=result.substring(startPromo,endPromo);
         ref=result.substring(startRef,endRef);
         mod=result.substring(startMod,endMod);
-        balance=result.substring(startBalance,endBalance);
-        balance=String.format("%.8f", Float.parseFloat(balance));
-
+        if(!flag)
+        {
+            balance=result.substring(startBalance,endBalance);
+            balance = String.format("%.8f", Float.parseFloat(balance));
+        }
+        else balance=result.substring(startBalance+1,endBalance-1);
         return balance;
     }
 

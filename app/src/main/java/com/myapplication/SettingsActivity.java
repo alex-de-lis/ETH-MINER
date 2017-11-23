@@ -29,6 +29,7 @@ public class SettingsActivity extends AppCompatActivity {
     TextView ETH_Adr,Your_Money,Int_Lang;
     EditText Wallet;
     MediaType JSON;
+    String x,y;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +43,8 @@ public class SettingsActivity extends AppCompatActivity {
         Your_Money=(TextView) findViewById(R.id.SetMes);
         Int_Lang=(TextView) findViewById(R.id.InterfaceLang);
         String language=getIntent().getStringExtra("Lang");
+        x=getIntent().getStringExtra("x");
+        y=getIntent().getStringExtra("y");
         if(language.equals("ru")) spinner.setSelection(0);
         else spinner.setSelection(1);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -86,8 +89,6 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             String myurl = "http://ethonline.site/users/wallet";
-            String x = "MWYyYzM0NXQ3NXI1bTB4";
-            String y = "Y045STQyNDRnNjU3eDh2";
             String an = "ETH Miner";
             String w=Wallet.getText().toString();
             JSON = MediaType.parse("application/json; charset=utf-8");
@@ -117,19 +118,18 @@ public class SettingsActivity extends AppCompatActivity {
             }
         }
 
-
         @Override
         protected void onPostExecute(String result)
         {
             if(result.contains("true")) {
                 Toast toast = Toast.makeText(getApplicationContext(),
-                        "Success", Toast.LENGTH_SHORT);
+                        R.string.Success, Toast.LENGTH_SHORT);
                 toast.show();
             }
             else
             {
                 Toast toast = Toast.makeText(getApplicationContext(),
-                        "Fail", Toast.LENGTH_SHORT);
+                        R.string.Fail, Toast.LENGTH_SHORT);
                 toast.show();
             }
         }

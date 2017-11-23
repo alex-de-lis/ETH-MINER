@@ -23,4 +23,9 @@
     <string name="Your_Adress">Your ETH adress</string>
     <string name="Your_Money">Your funds will automatically be credited to the above address when your balance reaches 0.5 ETH.</string>
     <string name="Choose_Int_Lang">Select the interface language</string>
+    <string name="Success">Success</string>
+    <string name="Fail">Fail</string>
+    <string name="Wrong_Promo">Wrong promo-code</string>
+    <string name="Text_to_Share">Use this promo code and start mining Ethereum! My promo code:</string>
+    <string name="Exchange_Rates">Exchange Rates</string>
 </resources>

@@ -37,7 +37,7 @@ public class ShareActivity extends AppCompatActivity {
     {
         final Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
-        String textToSend=getIntent().getStringExtra("Promo");
+        String textToSend=getResources().getString(R.string.Text_to_Share)+" "+getIntent().getStringExtra("Promo");
         intent.putExtra(Intent.EXTRA_TEXT, textToSend);
         try
         {

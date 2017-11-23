@@ -24,4 +24,9 @@
     <string name="Your_Adress">Ваш адрес ETH</string>
     <string name="Your_Money">Ваши средства будут автоматически зачислены на вышеуказанный адрес когда Ваш баланс достигнет 0.5 ETH.</string>
     <string name="Choose_Int_Lang">Выберите язык интерфейса</string>
+    <string name="Success">Успешно</string>
+    <string name="Fail">Неудача</string>
+    <string name="Wrong_Promo">неверный промо-код</string>
+    <string name="Text_to_Share">Используй этот промокод и начни майнить Ethereum! Мой промокод:</string>
+    <string name="Exchange_Rates">Курсы валют</string>
 </resources>
