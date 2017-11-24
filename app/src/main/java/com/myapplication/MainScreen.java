@@ -150,59 +150,8 @@ public class MainScreen extends AppCompatActivity {
 
     private void Encoding(String MyId)
     {
-        x = Base64.encodeToString(MyId.getBytes(),Base64.DEFAULT);
-        String temp, FirstResult="",Secondresult="", result="";
-        String alphabit = "abcdefghijklmnopqrstvuwxyz";
-        String digit="0123456789";
-        int i=0,position;
-        char first, second;
-
-        while(i<MyId.length()-1)
-        {
-            first=MyId.charAt(i);
-            second=MyId.charAt(i+1);
-            temp=first+""+second;
-            temp=MyRevers(temp);
-            FirstResult+=temp;
-            i+=2;
-        }
-
-        if(MyId.length()%2!=0)
-        {
-            first=MyId.charAt(i);
-            FirstResult+=first+"";
-        }
-
-        for(i=0;i<FirstResult.length();i++)
-        {
-            first=FirstResult.charAt(i);
-            if(alphabit.contains(first+""))
-            {
-                position=alphabit.length()-alphabit.indexOf(first)-1;
-                second=alphabit.charAt(position);
-                temp=second+"";
-                Secondresult+=temp;
-            }
-            else
-            {
-                position=digit.length()-digit.indexOf(first)-1;
-                second=digit.charAt(position);
-                Secondresult+=second+"";
-            }
-        }
-
-        for(i=0;i<Secondresult.length();i++)
-        {
-            first=Secondresult.charAt(i);
-            temp=first+"";
-            if(alphabit.contains(temp)&&i%2!=0)
-            {
-                result+=temp.toUpperCase();
-            }
-            else result+=temp;
-        }
-        result=MyRevers(result);
-        y = Base64.encodeToString(result.getBytes(),Base64.DEFAULT);
+        x = "a";
+		y="b";
     }
 
     private String MyRevers(String s)
