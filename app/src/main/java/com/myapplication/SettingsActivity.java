@@ -12,6 +12,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,12 +33,16 @@ public class SettingsActivity extends AppCompatActivity {
     TextView ETH_Adr,Your_Money,Int_Lang;
     EditText Wallet;
     MediaType JSON;
-    String x,y;
+    String x,y,wallet="",prevWallet,Lang="Русский";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        MobileAds.initialize(getApplicationContext(),"ca-app-pub-7985661347006943~7217309032");
+        AdView myAdView=(AdView)findViewById(R.id.AdSettings);
+        AdRequest adRequest=new AdRequest.Builder().build();
+        myAdView.loadAd(adRequest);
         final Spinner spinner = (Spinner) findViewById(R.id.Language);
         SaveBtn=(Button) findViewById(R.id.SaveBtn);
         BackBtn=(Button)findViewById(R.id.BackBtn);
@@ -45,13 +53,15 @@ public class SettingsActivity extends AppCompatActivity {
         String language=getIntent().getStringExtra("Lang");
         x=getIntent().getStringExtra("x");
         y=getIntent().getStringExtra("y");
+        wallet=getIntent().getStringExtra("wallet");
+        Wallet.setText(wallet);
         if(language.equals("ru")) spinner.setSelection(0);
         else spinner.setSelection(1);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent,
                                        View itemSelected, int selectedItemPosition, long selectedId)
             {
-                String Lang=spinner.getSelectedItem().toString();
+                Lang=spinner.getSelectedItem().toString();
                 if(Lang.equals("Русский")) Lang="ru";
                 else Lang="en";
                 Locale myLocale = new Locale(Lang);
@@ -59,7 +69,7 @@ public class SettingsActivity extends AppCompatActivity {
                 android.content.res.Configuration config = new android.content.res.Configuration();
                 config.locale = myLocale;
                 getResources().updateConfiguration(config, getResources().getDisplayMetrics());
-                Intent intent = new Intent();
+                Intent intent=new Intent();
                 intent.putExtra("Lang", Lang);
                 setResult(RESULT_OK, intent);
                 SaveBtn.setText((getResources().getString(R.string.Save)));
@@ -81,6 +91,10 @@ public class SettingsActivity extends AppCompatActivity {
 
     public void BackFromSettings(View view)
     {
+        Intent intent=new Intent();
+        intent.putExtra("wallet", wallet);
+        intent.putExtra("Lang",Lang);
+        setResult(RESULT_OK, intent);
         finish();
     }
 
@@ -89,8 +103,10 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             String myurl = "http://ethonline.site/users/wallet";
-            String an = "ETH Miner";
+            String an = "Doge Free Maker";
             String w=Wallet.getText().toString();
+            prevWallet=wallet;
+            wallet=w;
             JSON = MediaType.parse("application/json; charset=utf-8");
 
             OkHttpClient client = new OkHttpClient();
@@ -131,13 +147,17 @@ public class SettingsActivity extends AppCompatActivity {
                 Toast toast = Toast.makeText(getApplicationContext(),
                         R.string.Fail, Toast.LENGTH_SHORT);
                 toast.show();
+                wallet=prevWallet;
             }
+            SaveBtn.setClickable(true);
+            BackBtn.setClickable(true);
         }
 
 
         @Override
         protected void onPreExecute() {
-
+            SaveBtn.setClickable(false);
+            BackBtn.setClickable(false);
         }
     }
 }

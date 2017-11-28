@@ -4,50 +4,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.myapplication.MainActivity">
+    tools:context="com.myapplication.Your_rate">
 
-    <TableLayout
-        android:id="@+id/Table1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TableRow>
-            <EditText
-                android:id="@+id/ET"
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                />
-        </TableRow>
-    </TableLayout>
-
-    <Button
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/YourRate"
+        android:text="@string/Your_Rate"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btn"
-        android:text="@string/Begin_with"
-        android:onClick="WithKod"
-        app:layout_constraintTop_toBottomOf="@+id/Table1"
+        android:textSize="30sp"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         />
 
     <Button
-        android:id="@+id/btn2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="WithoutKod"
-        android:text="@string/Begin_without"
-        app:layout_constraintEnd_toEndOf="@id/btn"
-        app:layout_constraintTop_toBottomOf="@id/btn"/>
-
-    <TextView
-        android:id="@+id/tvText"
+        android:id="@+id/BackFromYourRate"
+        android:text="@string/Back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/btn2"
+        android:onClick="BackFromYourRate"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/YourRateText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="30sp"
+        app:layout_constraintTop_toBottomOf="@id/BackFromYourRate"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         />
 
     <com.google.android.gms.ads.AdView
         xmlns:ads="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/Adregistr"
+        android:id="@+id/AdYourRate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintRight_toRightOf="parent"

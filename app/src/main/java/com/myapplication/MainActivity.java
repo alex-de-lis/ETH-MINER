@@ -11,6 +11,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -36,6 +40,10 @@ public class MainActivity extends AppCompatActivity {
         edText=(EditText)findViewById(R.id.ET);
         x=getIntent().getStringExtra("x");
         y=getIntent().getStringExtra("y");
+        MobileAds.initialize(getApplicationContext(),"ca-app-pub-7985661347006943~7217309032");
+        AdView myAdView=(AdView)findViewById(R.id.Adregistr);
+        AdRequest adRequest=new AdRequest.Builder().build();
+        myAdView.loadAd(adRequest);
     }
 
     private void Params(String result)
@@ -62,8 +70,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             String myurl = "http://ethonline.site/users/register";
-            String an = "ETH Miner";
-            String cur="eth";
+            String an = "Doge Free Maker";
+            String cur="doge";
             JSON = MediaType.parse("application/json; charset=utf-8");
 
             OkHttpClient client = new OkHttpClient();

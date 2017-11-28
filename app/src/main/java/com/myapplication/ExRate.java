@@ -5,6 +5,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+
 public class ExRate extends AppCompatActivity {
 
     TextView ExText;
@@ -15,8 +19,11 @@ public class ExRate extends AppCompatActivity {
         setContentView(R.layout.activity_ex_rate);
         ExText=(TextView)findViewById(R.id.ExtText);
         String json=getIntent().getStringExtra("json");
-
-        ExText.setText(ParseJson(json));
+        MobileAds.initialize(getApplicationContext(),"ca-app-pub-7985661347006943~7217309032");
+        AdView myAdView=(AdView)findViewById(R.id.AdExRate);
+        AdRequest adRequest=new AdRequest.Builder().build();
+        myAdView.loadAd(adRequest);
+        ExText.setText(json);
     }
 
     public void BackFromExt(View view)
@@ -24,7 +31,7 @@ public class ExRate extends AppCompatActivity {
         finish();
     }
 
-    private String  ParseJson(String json)
+    /*private String  ParseJson(String json)
     {
         String USD = "\"USD\":",End=",\"",EUR="\"EUR\":",GBP="\"GBP\":",CHF="\"CHF\":",CNY="\"CNY\":";
         String JPY="\"JPY\":", EndJpy="}";
@@ -48,5 +55,5 @@ public class ExRate extends AppCompatActivity {
         result+="CNY: "+json.substring(startCNY,endCNY)+"\n";
         result+="JPY: "+json.substring(startJPY,endJPY)+"\n";
         return result;
-    }
+    }*/
 }

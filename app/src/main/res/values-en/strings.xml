@@ -10,7 +10,7 @@
     <string name="Share">Share</string>
     <string name="SendPromo">Send promo code</string>
     <string name="Back">Back</string>
-    <string name="DescriptionTextShare">Share the promotional code with the doves and increase the speed of mining with each activation of the application. The application activated with your promotional code will receive on your starting balance 0.0035 ETH.</string>
+    <string name="DescriptionTextShare">Share the promotional code with the doves and increase the speed of mining with each activation of the application. The application activated with your promotional code will receive on your starting balance 0.0035 DOGE.</string>
     <string name="YourPromo">Your promo code:</string>
     <string name="Activated">Activated applications:</string>
     <string name="Coeff">Rate factor:</string>
@@ -20,12 +20,16 @@
         <item>English</item>
     </string-array>
     <string name="Save">Save</string>
-    <string name="Your_Adress">Your ETH adress</string>
-    <string name="Your_Money">Your funds will automatically be credited to the above address when your balance reaches 0.5 ETH.</string>
+    <string name="Your_Adress">Your DOGE adress</string>
+    <string name="Your_Money">Your funds will automatically be credited to the above address when your balance reaches 0.5 DOGE.</string>
     <string name="Choose_Int_Lang">Select the interface language</string>
     <string name="Success">Success</string>
     <string name="Fail">Fail</string>
     <string name="Wrong_Promo">Wrong promo-code</string>
-    <string name="Text_to_Share">Use this promo code and start mining Ethereum! My promo code:</string>
+    <string name="Text_to_Share">Use this promo code and start mining Dogecoin! My promo code:</string>
     <string name="Exchange_Rates">Exchange Rates</string>
+    <string name="Convert_Btn">Convert now</string>
+    <string name="Other_Text">Do you want to know the amount of your balance in the world\'s major currencies?</string>
+    <string name="Your_Rate">Your rate</string>
+    <string name="Menu">Menu</string>
 </resources>

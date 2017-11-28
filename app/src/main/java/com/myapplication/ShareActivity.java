@@ -6,6 +6,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+
 public class ShareActivity extends AppCompatActivity {
 
     TextView Promo, Activ,Mods;
@@ -17,6 +21,10 @@ public class ShareActivity extends AppCompatActivity {
         Promo=(TextView)findViewById(R.id.YourPromo);
         Activ=(TextView)findViewById(R.id.ActivatedApp);
         Mods=(TextView)findViewById(R.id.Coeff);
+        MobileAds.initialize(getApplicationContext(),"ca-app-pub-7985661347006943~7217309032");
+        AdView myAdView=(AdView)findViewById(R.id.AdShare);
+        AdRequest adRequest=new AdRequest.Builder().build();
+        myAdView.loadAd(adRequest);
         Promo.setText(R.string.YourPromo);
         String promoText= Promo.getText().toString()+getIntent().getStringExtra("Promo");
         Promo.setText(promoText);

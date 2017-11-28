@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".MainScreen"
             android:screenOrientation="portrait">
@@ -33,7 +33,8 @@
         <activity
             android:name=".SettingsActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ExRate"></activity>
+        <activity android:name=".ExRate" />
+        <activity android:name=".Your_rate"></activity>
     </application>
 
 </manifest>
