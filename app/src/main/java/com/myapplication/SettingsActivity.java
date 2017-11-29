@@ -12,13 +12,16 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.Locale;
 
 import okhttp3.MediaType;
@@ -34,27 +37,31 @@ public class SettingsActivity extends AppCompatActivity {
     EditText Wallet;
     MediaType JSON;
     String x,y,wallet="",prevWallet,Lang="Русский";
+    Date OldDate, NewDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         MobileAds.initialize(getApplicationContext(),"ca-app-pub-7985661347006943~7217309032");
-        AdView myAdView=(AdView)findViewById(R.id.AdSettings);
+        AdView myAdView= findViewById(R.id.AdSettings);
         AdRequest adRequest=new AdRequest.Builder().build();
         myAdView.loadAd(adRequest);
-        final Spinner spinner = (Spinner) findViewById(R.id.Language);
-        SaveBtn=(Button) findViewById(R.id.SaveBtn);
-        BackBtn=(Button)findViewById(R.id.BackBtn);
-        Wallet=(EditText)findViewById(R.id.Adress);
-        ETH_Adr=(TextView) findViewById(R.id.YourEthAdress);
-        Your_Money=(TextView) findViewById(R.id.SetMes);
-        Int_Lang=(TextView) findViewById(R.id.InterfaceLang);
+        final Spinner spinner = findViewById(R.id.Language);
+        SaveBtn= findViewById(R.id.SaveBtn);
+        BackBtn= findViewById(R.id.BackBtn);
+        Wallet= findViewById(R.id.Adress);
+        ETH_Adr= findViewById(R.id.YourEthAdress);
+        Your_Money= findViewById(R.id.SetMes);
+        Int_Lang= findViewById(R.id.InterfaceLang);
+        InitInterstitial();
         String language=getIntent().getStringExtra("Lang");
         x=getIntent().getStringExtra("x");
         y=getIntent().getStringExtra("y");
         wallet=getIntent().getStringExtra("wallet");
         Wallet.setText(wallet);
+        String time = getIntent().getStringExtra("Date");
+        OldDate=new Date(Long.parseLong(time));
         if(language.equals("ru")) spinner.setSelection(0);
         else spinner.setSelection(1);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -85,8 +92,49 @@ public class SettingsActivity extends AppCompatActivity {
 
     public void Save(View view)
     {
-        AsyncTaskForMining myTask = new AsyncTaskForMining();
+        AsyncTaskForWallet myTask = new AsyncTaskForWallet();
         myTask.execute();
+    }
+
+    InterstitialAd mInterstitialAd;
+    public void InitInterstitial()
+    {
+        mInterstitialAd=new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-7985661347006943/3138463225");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+    }
+
+    int AdPeriod=40;
+    public boolean MyTimer()
+    {
+        NewDate=new Date();
+        long result=NewDate.getTime()-OldDate.getTime();
+        result=result/1000;
+        if(result>=AdPeriod)
+        {
+            OldDate=NewDate;
+            return true;
+        }
+        else return false;
+    }
+
+    public void ShowAd(final Intent intent)
+    {
+        mInterstitialAd.setAdListener(new AdListener()
+        {
+            @Override
+            public void onAdClosed()
+            {
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                finish();
+            }
+        });
+        if(mInterstitialAd.isLoaded())
+        {
+            mInterstitialAd.show();
+        }
+        else finish();
+
     }
 
     public void BackFromSettings(View view)
@@ -95,10 +143,23 @@ public class SettingsActivity extends AppCompatActivity {
         intent.putExtra("wallet", wallet);
         intent.putExtra("Lang",Lang);
         setResult(RESULT_OK, intent);
-        finish();
+        if(MyTimer())
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            ShowAd(intent);
+        }
+        else
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            finish();
+        }
     }
 
-    private class AsyncTaskForMining extends AsyncTask<String, String, String> {
+
+
+    private class AsyncTaskForWallet extends AsyncTask<String, String, String> {
 
         @Override
         protected String doInBackground(String... params) {

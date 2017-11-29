@@ -1,59 +1,96 @@
 package com.myapplication;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+
+import java.util.Date;
 
 public class ExRate extends AppCompatActivity {
 
     TextView ExText;
+    Date OldDate,NewDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ex_rate);
-        ExText=(TextView)findViewById(R.id.ExtText);
+        ExText= findViewById(R.id.ExtText);
         String json=getIntent().getStringExtra("json");
         MobileAds.initialize(getApplicationContext(),"ca-app-pub-7985661347006943~7217309032");
-        AdView myAdView=(AdView)findViewById(R.id.AdExRate);
+        AdView myAdView= findViewById(R.id.AdExRate);
+        InitInterstitial();
+        String time = getIntent().getStringExtra("Date");
+        OldDate=new Date(Long.parseLong(time));
         AdRequest adRequest=new AdRequest.Builder().build();
         myAdView.loadAd(adRequest);
         ExText.setText(json);
     }
 
-    public void BackFromExt(View view)
+    InterstitialAd mInterstitialAd;
+    public void InitInterstitial()
     {
-        finish();
+        mInterstitialAd=new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-7985661347006943/3138463225");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
     }
 
-    /*private String  ParseJson(String json)
+    int AdPeriod=40;
+    public boolean MyTimer()
     {
-        String USD = "\"USD\":",End=",\"",EUR="\"EUR\":",GBP="\"GBP\":",CHF="\"CHF\":",CNY="\"CNY\":";
-        String JPY="\"JPY\":", EndJpy="}";
-        int startUSD=json.indexOf(USD)+USD.length();
-        int endUSD=json.indexOf(End,startUSD);
-        int startEUR=json.indexOf(EUR)+EUR.length();
-        int endEUR=json.indexOf(End,startEUR);
-        int startGBP=json.indexOf(GBP)+GBP.length();
-        int endGBP=json.indexOf(End,startGBP);
-        int startCHF=json.indexOf(CHF)+USD.length();
-        int endCHF=json.indexOf(End,startCHF);
-        int startCNY=json.indexOf(CNY)+USD.length();
-        int endCNY=json.indexOf(End,startCNY);
-        int startJPY=json.indexOf(JPY)+USD.length();
-        int endJPY=json.indexOf(EndJpy,startJPY);
-        String result="";
-        result+="USD: "+json.substring(startUSD,endUSD)+"\n";
-        result+="EUR: "+json.substring(startEUR,endEUR)+"\n";
-        result+="GBP: "+json.substring(startGBP,endGBP)+"\n";
-        result+="CHF: "+json.substring(startCHF,endCHF)+"\n";
-        result+="CNY: "+json.substring(startCNY,endCNY)+"\n";
-        result+="JPY: "+json.substring(startJPY,endJPY)+"\n";
-        return result;
-    }*/
+        NewDate=new Date();
+        long result=NewDate.getTime()-OldDate.getTime();
+        result=result/1000;
+        if(result>=AdPeriod)
+        {
+            OldDate=NewDate;
+            return true;
+        }
+        else return false;
+    }
+
+    public void ShowAd(final Intent intent)
+    {
+        mInterstitialAd.setAdListener(new AdListener()
+        {
+            @Override
+            public void onAdClosed()
+            {
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                finish();
+            }
+        });
+        if(mInterstitialAd.isLoaded())
+        {
+            mInterstitialAd.show();
+        }
+        else finish();
+
+    }
+
+    public void BackFromExt(View view)
+    {
+        Intent intent=new Intent();
+        setResult(RESULT_OK, intent);
+        if(MyTimer())
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            ShowAd(intent);
+        }
+        else
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            finish();
+        }
+    }
 }

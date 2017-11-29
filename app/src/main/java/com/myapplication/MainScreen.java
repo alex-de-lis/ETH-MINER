@@ -13,6 +13,7 @@ import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
@@ -48,26 +49,23 @@ public class MainScreen extends AppCompatActivity {
     String Balance,promo,ref,mod,Language="ru",x,y,PrevBalance,ExtRate,wallet;
     ProgressBar PB;
     InterstitialAd mInterstitialAd;
+    Date OldDate,NewDate;
+    int AdPeriod=40;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
-        graph = (GraphView) findViewById(R.id.MyGraph);
-        btn =(Button) findViewById(R.id.PlayBtn);
-        CheckBalanceBtn=(Button) findViewById(R.id.CheckBal);
-        MenuBtn=(Button)findViewById(R.id.MenuBtn);
-        RateBtn=(Button) findViewById(R.id.ERateBtn);
-        PB=(ProgressBar)findViewById(R.id.MyProgressBar);
+        graph = findViewById(R.id.MyGraph);
+        btn = findViewById(R.id.PlayBtn);
+        CheckBalanceBtn= findViewById(R.id.CheckBal);
+        MenuBtn= findViewById(R.id.MenuBtn);
+        RateBtn= findViewById(R.id.ERateBtn);
+        PB= findViewById(R.id.MyProgressBar);
         ChangeLocale(Language);
-        mInterstitialAd=new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-7985661347006943/3138463225");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
-        MobileAds.initialize(getApplicationContext(),"ca-app-pub-7985661347006943~7217309032");
-        AdView myAdView=(AdView)findViewById(R.id.AdMainScr);
-        AdRequest adRequest=new AdRequest.Builder().build();
-        myAdView.loadAd(adRequest);
+        InitInterstitial();
+        Banner();
         String android_id = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
         Encoding(android_id);
         AsyncTaskCheck check = new AsyncTaskCheck();
@@ -76,44 +74,118 @@ public class MainScreen extends AppCompatActivity {
         newTask.execute();
         AsyncTaskForGraph task = new AsyncTaskForGraph();
         task.execute();
+        NewDate=new Date();
+        OldDate=new Date(NewDate.getTime()-AdPeriod*1010);
+    }
+
+    public void InitInterstitial()
+    {
+        mInterstitialAd=new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-7985661347006943/3138463225");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+    }
+
+    public void Banner()
+    {
+        MobileAds.initialize(getApplicationContext(),"ca-app-pub-7985661347006943~7217309032");
+        AdView myAdView= findViewById(R.id.AdMainScr);
+        AdRequest adRequest=new AdRequest.Builder().build();
+        myAdView.loadAd(adRequest);
+    }
+
+    public boolean MyTimer()
+    {
+        NewDate=new Date();
+        long result=NewDate.getTime()-OldDate.getTime();
+        result=result/1000;
+        if(result>=AdPeriod)
+        {
+            OldDate=NewDate;
+            return true;
+        }
+        else return false;
     }
 
     public void CheckBalance(View view)
     {
-        ShowAd();
         Intent intent = new Intent(MainScreen.this,CheckBalanceActivity.class);
         intent.putExtra("json",ExtRate);
         intent.putExtra("balance", Balance);
-        startActivity(intent);
+        String time;
+        if(MyTimer())
+        {
+            time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            ShowAd(intent,3);
+        }
+        else
+        {
+            time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            startActivityForResult(intent,3);
+        }
     }
 
     public void Share()
     {
-        ShowAd();
         Intent intent = new Intent(MainScreen.this,ShareActivity.class);
         intent.putExtra("Promo", promo);
         intent.putExtra("Ref",ref);
         intent.putExtra("Mod",mod);
-        startActivity(intent);
+        String time;
+        if(MyTimer())
+        {
+            time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            ShowAd(intent,3);
+        }
+        else
+        {
+            time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            startActivityForResult(intent,3);
+        }
     }
 
     public void ExtRates(View view)
     {
-        ShowAd();
         Intent intent = new Intent(MainScreen.this,ExRate.class);
         intent.putExtra("json",ExtRate);
-        startActivity(intent);
+        String time;
+        if(MyTimer())
+        {
+            time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            ShowAd(intent,3);
+        }
+        else
+        {
+            time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            startActivityForResult(intent,3);
+        }
     }
 
     public void Setting()
     {
-        ShowAd();
         Intent intent=new Intent(MainScreen.this,SettingsActivity.class);
         intent.putExtra("Lang",Language);
         intent.putExtra("x",x);
         intent.putExtra("y",y);
         intent.putExtra("wallet",wallet);
-        startActivityForResult(intent,1);
+        String time;
+        if(MyTimer())
+        {
+            time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            ShowAd(intent,1);
+        }
+        else
+        {
+            time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            startActivityForResult(intent,1);
+        }
     }
 
     public void Menu(View view)
@@ -155,12 +227,24 @@ public class MainScreen extends AppCompatActivity {
 
     }
 
-    public void ShowAd()
+    public void ShowAd(final Intent intent, final int reqestCode)
     {
-        mInterstitialAd=new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-7985661347006943/3138463225");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
-        mInterstitialAd.show();
+        mInterstitialAd.setAdListener(new AdListener()
+        {
+            @Override
+            public void onAdClosed()
+            {
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                if(reqestCode!=1) startActivityForResult(intent,3);
+                else startActivityForResult(intent,1);
+            }
+        });
+        if(mInterstitialAd.isLoaded())
+        {
+            mInterstitialAd.show();
+        }
+        else startActivityForResult(intent,reqestCode);
+
     }
 
     private class AsyncTaskForRates extends AsyncTask<String, String, String> {
@@ -279,8 +363,8 @@ public class MainScreen extends AppCompatActivity {
 
     private void Encoding(String MyId)
     {
-        x=1;
-        y=1;
+        x = "";
+        y="";
     }
 
     private String MyRevers(String s)
@@ -291,9 +375,12 @@ public class MainScreen extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data == null) {return;}
-        if(requestCode==1) {
+        if(requestCode==1)
+        {
             String Lang = data.getStringExtra("Lang");
             wallet=data.getStringExtra("wallet");
+            String newtime= data.getStringExtra("Date");
+            OldDate=new Date(Long.parseLong(newtime));
             ChangeLocale(Lang);
         }
         if(requestCode==2)
@@ -303,6 +390,11 @@ public class MainScreen extends AppCompatActivity {
             ref=data.getStringExtra("ref");
             promo=data.getStringExtra("promo");
             mod=data.getStringExtra("mod");
+        }
+        if(requestCode==3)
+        {
+            String newtime= data.getStringExtra("Date");
+            OldDate=new Date(Long.parseLong(newtime));
         }
     }
 

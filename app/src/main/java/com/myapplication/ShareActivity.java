@@ -6,13 +6,18 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+
+import java.util.Date;
 
 public class ShareActivity extends AppCompatActivity {
 
     TextView Promo, Activ,Mods;
+    Date OldDate,NewDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +29,9 @@ public class ShareActivity extends AppCompatActivity {
         MobileAds.initialize(getApplicationContext(),"ca-app-pub-7985661347006943~7217309032");
         AdView myAdView=(AdView)findViewById(R.id.AdShare);
         AdRequest adRequest=new AdRequest.Builder().build();
+        InitInterstitial();
+        String time = getIntent().getStringExtra("Date");
+        OldDate=new Date(Long.parseLong(time));
         myAdView.loadAd(adRequest);
         Promo.setText(R.string.YourPromo);
         String promoText= Promo.getText().toString()+getIntent().getStringExtra("Promo");
@@ -36,9 +44,63 @@ public class ShareActivity extends AppCompatActivity {
         Mods.setText(modText);
     }
 
+    InterstitialAd mInterstitialAd;
+    public void InitInterstitial()
+    {
+        mInterstitialAd=new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-7985661347006943/3138463225");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+    }
+
+    int AdPeriod=40;
+    public boolean MyTimer()
+    {
+        NewDate=new Date();
+        long result=NewDate.getTime()-OldDate.getTime();
+        result=result/1000;
+        if(result>=AdPeriod)
+        {
+            OldDate=NewDate;
+            return true;
+        }
+        else return false;
+    }
+
+    public void ShowAd(final Intent intent)
+    {
+        mInterstitialAd.setAdListener(new AdListener()
+        {
+            @Override
+            public void onAdClosed()
+            {
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                finish();
+            }
+        });
+        if(mInterstitialAd.isLoaded())
+        {
+            mInterstitialAd.show();
+        }
+        else finish();
+
+    }
+
     public void BackToMain(View view)
     {
-        finish();
+        Intent intent=new Intent();
+        setResult(RESULT_OK, intent);
+        if(MyTimer())
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            ShowAd(intent);
+        }
+        else
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            finish();
+        }
     }
 
     public void SendMyPromo(View view)

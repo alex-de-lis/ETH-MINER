@@ -1,30 +1,39 @@
 package com.myapplication;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+
+import java.util.Date;
 
 public class Your_rate extends AppCompatActivity {
 
     TextView YourRateText;
+    Date OldDate,NewDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_your_rate);
-        YourRateText=(TextView)findViewById(R.id.YourRateText);
+        YourRateText= findViewById(R.id.YourRateText);
         String Rate=getIntent().getStringExtra("json");
         String TextBalance=getIntent().getStringExtra("balance");
         TextBalance=TextBalance.substring(0,TextBalance.indexOf("DOGE"));
         float balance=Float.parseFloat(TextBalance);
         YourRateText.setText(Parse(Rate,balance));
+        InitInterstitial();
+        String time = getIntent().getStringExtra("Date");
+        OldDate=new Date(Long.parseLong(time));
         MobileAds.initialize(getApplicationContext(),"ca-app-pub-7985661347006943~7217309032");
-        AdView myAdView=(AdView)findViewById(R.id.AdYourRate);
+        AdView myAdView= findViewById(R.id.AdYourRate);
         AdRequest adRequest=new AdRequest.Builder().build();
         myAdView.loadAd(adRequest);
     }
@@ -63,8 +72,62 @@ public class Your_rate extends AppCompatActivity {
         return Float.parseFloat(json.substring(start,end));
     }
 
+    InterstitialAd mInterstitialAd;
+    public void InitInterstitial()
+    {
+        mInterstitialAd=new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-7985661347006943/3138463225");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+    }
+
+    int AdPeriod=40;
+    public boolean MyTimer()
+    {
+        NewDate=new Date();
+        long result=NewDate.getTime()-OldDate.getTime();
+        result=result/1000;
+        if(result>=AdPeriod)
+        {
+            OldDate=NewDate;
+            return true;
+        }
+        else return false;
+    }
+
+    public void ShowAd(final Intent intent)
+    {
+        mInterstitialAd.setAdListener(new AdListener()
+        {
+            @Override
+            public void onAdClosed()
+            {
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                finish();
+            }
+        });
+        if(mInterstitialAd.isLoaded())
+        {
+            mInterstitialAd.show();
+        }
+        else finish();
+
+    }
+
     public void BackFromYourRate (View view)
     {
-        finish();
+        Intent intent=new Intent();
+        setResult(RESULT_OK, intent);
+        if(MyTimer())
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            ShowAd(intent);
+        }
+        else
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            finish();
+        }
     }
 }

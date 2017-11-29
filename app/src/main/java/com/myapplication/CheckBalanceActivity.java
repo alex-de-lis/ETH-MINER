@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
@@ -14,29 +15,116 @@ import com.google.android.gms.ads.MobileAds;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.Date;
 
 public class CheckBalanceActivity extends AppCompatActivity {
 
     TextView Balance;
     String Rate, YourBalance;
+    Date OldDate,NewDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_balance);
-        Balance = (TextView)findViewById(R.id.TextBalance);
+        Balance = findViewById(R.id.TextBalance);
         Rate=getIntent().getStringExtra("json");
         YourBalance=getIntent().getStringExtra("balance")+" DOGE";
         Balance.setText(YourBalance);
+        String time = getIntent().getStringExtra("Date");
+        OldDate=new Date(Long.parseLong(time));
+        InitInterstitial();
         MobileAds.initialize(getApplicationContext(),"ca-app-pub-7985661347006943~7217309032");
-        AdView myAdView=(AdView)findViewById(R.id.AdBalance);
+        AdView myAdView= findViewById(R.id.AdBalance);
         AdRequest adRequest=new AdRequest.Builder().build();
         myAdView.loadAd(adRequest);
     }
 
+    InterstitialAd mInterstitialAd;
+    public void InitInterstitial()
+    {
+        mInterstitialAd=new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-7985661347006943/3138463225");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+    }
+
+    int AdPeriod=40;
+    public boolean MyTimer()
+    {
+        NewDate=new Date();
+        long result=NewDate.getTime()-OldDate.getTime();
+        result=result/1000;
+        if(result>=AdPeriod)
+        {
+            OldDate=NewDate;
+            return true;
+        }
+        else return false;
+    }
+
+    public void ShowAd(final Intent intent)
+    {
+        mInterstitialAd.setAdListener(new AdListener()
+        {
+            @Override
+            public void onAdClosed()
+            {
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                finish();
+            }
+        });
+        if(mInterstitialAd.isLoaded())
+        {
+            mInterstitialAd.show();
+        }
+        else finish();
+    }
+
     public void BackFromBalance(View view)
     {
-        finish();
+        Intent intent=new Intent();
+        setResult(RESULT_OK, intent);
+        if(MyTimer())
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            ShowAd(intent);
+        }
+        else
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            finish();
+        }
+    }
+
+    public void ShowAdTodayRate(final Intent intent)
+    {
+        mInterstitialAd.setAdListener(new AdListener()
+        {
+            @Override
+            public void onAdClosed()
+            {
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                startActivityForResult(intent,1);
+            }
+        });
+        if(mInterstitialAd.isLoaded())
+        {
+            mInterstitialAd.show();
+        }
+        else startActivityForResult(intent,1);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (data == null) {return;}
+        if(requestCode==1)
+        {
+            String newtime= data.getStringExtra("Date");
+            OldDate=new Date(Long.parseLong(newtime));
+        }
     }
 
     public void TodayRate(View view)
@@ -44,7 +132,19 @@ public class CheckBalanceActivity extends AppCompatActivity {
         Intent intent = new Intent(CheckBalanceActivity.this,Your_rate.class);
         intent.putExtra("json",Rate);
         intent.putExtra("balance",YourBalance);
-        startActivity(intent);
+        String time;
+        if(MyTimer())
+        {
+            time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            ShowAdTodayRate(intent);
+        }
+        else
+        {
+            time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            startActivityForResult(intent,1);
+        }
     }
 
 }
