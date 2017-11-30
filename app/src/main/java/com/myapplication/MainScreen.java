@@ -1,8 +1,12 @@
 package com.myapplication;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -46,7 +50,7 @@ public class MainScreen extends AppCompatActivity {
     Button btn,CheckBalanceBtn,RateBtn,MenuBtn;
     Timer timer;
     int onClick=0;
-    String Balance,promo,ref,mod,Language="ru",x,y,PrevBalance,ExtRate,wallet;
+    String Balance,promo,ref,mod,Language,x,y,PrevBalance,ExtRate,wallet;
     ProgressBar PB;
     InterstitialAd mInterstitialAd;
     Date OldDate,NewDate;
@@ -63,19 +67,44 @@ public class MainScreen extends AppCompatActivity {
         MenuBtn= findViewById(R.id.MenuBtn);
         RateBtn= findViewById(R.id.ERateBtn);
         PB= findViewById(R.id.MyProgressBar);
-        ChangeLocale(Language);
+        Language=getResources().getConfiguration().locale.getLanguage();
         InitInterstitial();
         Banner();
         String android_id = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
         Encoding(android_id);
-        AsyncTaskCheck check = new AsyncTaskCheck();
-        check.execute();
-        AsyncTaskForRates newTask= new AsyncTaskForRates();
-        newTask.execute();
-        AsyncTaskForGraph task = new AsyncTaskForGraph();
-        task.execute();
-        NewDate=new Date();
-        OldDate=new Date(NewDate.getTime()-AdPeriod*1010);
+        DownloadAll();
+        NewDate = new Date();
+        OldDate = new Date(NewDate.getTime() - AdPeriod * 1010);
+    }
+
+    private void DownloadAll()
+    {
+        if(isOnline())
+        {
+            AsyncTaskCheck check = new AsyncTaskCheck();
+            check.execute();
+            AsyncTaskForRates newTask = new AsyncTaskForRates();
+            newTask.execute();
+            AsyncTaskForGraph task = new AsyncTaskForGraph();
+            task.execute();
+        }
+        else
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getResources().getString(R.string.Alert_Title))
+                    .setMessage(getResources().getString(R.string.No_Internet_Connection))
+                    .setCancelable(false)
+                    .setNegativeButton(getResources().getString(R.string.Try_Again_Btn),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id)
+                                {
+                                    MainScreen.this.recreate();
+                                    dialog.cancel();
+                                }
+                            });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
     }
 
     public void InitInterstitial()
@@ -212,11 +241,9 @@ public class MainScreen extends AppCompatActivity {
 
     public void MiningActivity(View view)
     {
-        if(onClick==0) {
-            onClick++;
-            timer = new Timer();
-            timer.scheduleAtFixedRate(new MyTask(), 60*1000, 60 * 1000);
-            btn.setText(R.string.Stop);
+        if(onClick==0)
+        {
+            DownloadMining();
         }
         else
         {
@@ -224,7 +251,34 @@ public class MainScreen extends AppCompatActivity {
             timer.cancel();
             btn.setText(R.string.Maining);
         }
+    }
 
+    public void DownloadMining()
+    {
+        if(isOnline())
+        {
+            onClick++;
+            timer = new Timer();
+            timer.scheduleAtFixedRate(new MyTask(), 60*1000, 60 * 1000);
+            btn.setText(R.string.Stop);
+        }
+        else
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getResources().getString(R.string.Alert_Title))
+                    .setMessage(getResources().getString(R.string.No_Internet_Connection))
+                    .setCancelable(false)
+                    .setNegativeButton(getResources().getString(R.string.Try_Again_Btn),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id)
+                                {
+                                    DownloadMining();
+                                    dialog.cancel();
+                                }
+                            });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
     }
 
     public void ShowAd(final Intent intent, final int reqestCode)
@@ -245,6 +299,18 @@ public class MainScreen extends AppCompatActivity {
         }
         else startActivityForResult(intent,reqestCode);
 
+    }
+
+    protected boolean isOnline()
+    {
+        String cs = Context.CONNECTIVITY_SERVICE;
+        ConnectivityManager cm = (ConnectivityManager)
+                getSystemService(cs);
+        if (cm.getActiveNetworkInfo() == null) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private class AsyncTaskForRates extends AsyncTask<String, String, String> {
@@ -363,8 +429,7 @@ public class MainScreen extends AppCompatActivity {
 
     private void Encoding(String MyId)
     {
-        x = "";
-        y="";
+
     }
 
     private String MyRevers(String s)
@@ -390,6 +455,8 @@ public class MainScreen extends AppCompatActivity {
             ref=data.getStringExtra("ref");
             promo=data.getStringExtra("promo");
             mod=data.getStringExtra("mod");
+            AsyncTaskForFirstMining task= new AsyncTaskForFirstMining();
+            task.execute();
         }
         if(requestCode==3)
         {
@@ -401,7 +468,6 @@ public class MainScreen extends AppCompatActivity {
     void ChangeLocale(String Lang)
     {
         Locale myLocale = new Locale(Lang);
-        Locale.setDefault(myLocale);
         android.content.res.Configuration config = new android.content.res.Configuration();
         config.locale = myLocale;
         getResources().updateConfiguration(config, getResources().getDisplayMetrics());
@@ -416,6 +482,62 @@ public class MainScreen extends AppCompatActivity {
         CheckBalanceBtn.setText((getResources().getString(R.string.Check_Balance)));
         RateBtn.setText((getResources().getString(R.string.Exchange_Rates)));
         MenuBtn.setText((getResources().getString(R.string.Menu)));
+    }
+
+    private class AsyncTaskForFirstMining extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            String myurl = "http://ethonline.site/users/activity";
+            String an = "Doge Free Maker";
+            JSON = MediaType.parse("application/json; charset=utf-8");
+
+            OkHttpClient client = new OkHttpClient();
+            JSONObject postdata = new JSONObject();
+
+            try {
+                postdata.put("x", x);
+                postdata.put("y", y);
+                postdata.put("an", an);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            RequestBody body = RequestBody.create(JSON, postdata.toString());
+            Request request = new Request.Builder()
+                    .url(myurl)
+                    .post(body)
+                    .build();
+            try {
+                Response response = client.newCall(request).execute();
+                return response.body().string();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return e.toString();
+            }
+        }
+
+
+        @Override
+        protected void onPostExecute(String result)
+        {
+            if(result.contains("true"))
+            {
+                Balance = Params(result, false);
+                Balance = Balance.replace(',', '.');
+                float oldBalance = Float.parseFloat(PrevBalance);
+                float NewBalance = Float.parseFloat(Balance);
+                float Def = NewBalance - oldBalance;
+                PrevBalance = Balance;
+                String DefStr = String.format("%.8f", Def);
+                DefStr = "+" + DefStr;
+            }
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+
+        }
     }
 
     private class AsyncTaskForGraph extends AsyncTask<String, String, String> {
@@ -559,16 +681,24 @@ public class MainScreen extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result)
         {
-            Balance=Params(result, false);
-            Balance=Balance.replace(',','.');
-            float oldBalance=Float.parseFloat(PrevBalance);
-            float NewBalance=Float.parseFloat(Balance);
-            float Def=NewBalance-oldBalance;
-            PrevBalance=Balance;
-            String DefStr=String.format("%.8f", Def);
-            DefStr="+"+DefStr;
-            Toast toast = Toast.makeText(getApplicationContext(),DefStr, Toast.LENGTH_SHORT);
-            toast.show();
+            if(result.contains("true"))
+            {
+                Balance = Params(result, false);
+                Balance = Balance.replace(',', '.');
+                float oldBalance = Float.parseFloat(PrevBalance);
+                float NewBalance = Float.parseFloat(Balance);
+                float Def = NewBalance - oldBalance;
+                PrevBalance = Balance;
+                String DefStr = String.format("%.8f", Def);
+                DefStr = "+" + DefStr;
+                Toast toast = Toast.makeText(getApplicationContext(), DefStr, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+            else
+            {
+                Toast toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.No_Internet_Connection), Toast.LENGTH_SHORT);
+                toast.show();
+            }
         }
 
 
@@ -600,6 +730,7 @@ public class MainScreen extends AppCompatActivity {
         if(!flag)
         {
             balance=result.substring(startBalance,endBalance);
+            if(balance.contains("\"")) balance=result.substring(startBalance+1,endBalance-1);
             balance = String.format("%.8f", Float.parseFloat(balance));
         }
         else balance=result.substring(startBalance+1,endBalance-1);

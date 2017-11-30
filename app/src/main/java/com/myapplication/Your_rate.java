@@ -54,7 +54,7 @@ public class Your_rate extends AppCompatActivity {
         factor=Find(json,cny);
         result+=cny+" "+ToString(factor,balance)+"\n";
         factor=Find(json,jpy);
-        result+=jpy+" "+ToString(factor,balance)+"\n";
+        result+=jpy+" "+ToString(factor,balance);
         return result;
     }
 
@@ -114,6 +114,25 @@ public class Your_rate extends AppCompatActivity {
     }
 
     public void BackFromYourRate (View view)
+    {
+        Intent intent=new Intent();
+        setResult(RESULT_OK, intent);
+        if(MyTimer())
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            ShowAd(intent);
+        }
+        else
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            finish();
+        }
+    }
+
+    @Override
+    public void onBackPressed()
     {
         Intent intent=new Intent();
         setResult(RESULT_OK, intent);

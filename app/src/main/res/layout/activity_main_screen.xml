@@ -18,9 +18,10 @@
 
     <Button
         android:id="@+id/PlayBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="69dp"
+        android:layout_width="163dp"
+        android:layout_height="112dp"
         android:onClick="MiningActivity"
+        android:textSize="30sp"
         android:text="@string/Maining"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -37,31 +38,32 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.434" />
+        app:layout_constraintVertical_bias="0.467" />
 
     <Button
         android:id="@+id/CheckBal"
-        android:layout_width="wrap_content"
+        android:layout_width="262dp"
         android:layout_height="wrap_content"
-        android:text="@string/Check_Balance"
+        android:layout_marginTop="28dp"
         android:onClick="CheckBalance"
+        android:text="@string/Check_Balance"
         android:visibility="invisible"
-        app:layout_constraintTop_toBottomOf="@id/MyGraph"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/MyGraph" />
 
 
     <Button
         android:id="@+id/ERateBtn"
-        android:text="@string/Exchange_Rates"
-        android:layout_width="wrap_content"
+        android:layout_width="263dp"
         android:layout_height="wrap_content"
         android:onClick="ExtRates"
+        android:text="@string/Exchange_Rates"
         android:visibility="invisible"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/CheckBal"
-        />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/CheckBal" />
 
     <Button
         android:id="@+id/MenuBtn"

@@ -17,14 +17,15 @@
 
     <TextView
         android:id="@+id/YourEthAdress"
-        android:text="@string/Your_Adress"
-        android:textSize="30sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/Your_Adress"
+        android:textSize="30sp"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/BackBtn"
-        />
+        app:layout_constraintTop_toBottomOf="@id/BackBtn" />
 
     <EditText
         android:id="@+id/Adress"
@@ -53,29 +54,33 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/Your_Money"
+        android:textSize="20sp"
         app:layout_constraintTop_toBottomOf="@id/SaveBtn"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"/>
 
     <TextView
         android:id="@+id/InterfaceLang"
-        android:gravity="center"
-        android:text="@string/Choose_Int_Lang"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/SetMes"
+        android:layout_marginTop="40dp"
+        android:gravity="center"
+        android:text="@string/Choose_Int_Lang"
+        android:textSize="30sp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/SetMes" />
 
     <Spinner
         android:id="@+id/Language"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="198dp"
+        android:layout_height="49dp"
         android:entries="@array/Language"
-        app:layout_constraintTop_toBottomOf="@id/InterfaceLang"
-        app:layout_constraintRight_toRightOf="parent"
+        android:textSize="20sp"
         app:layout_constraintLeft_toLeftOf="parent"
-        >
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/InterfaceLang">
 
     </Spinner>
 

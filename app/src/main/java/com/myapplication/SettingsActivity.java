@@ -1,11 +1,16 @@
 package com.myapplication;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -68,6 +73,7 @@ public class SettingsActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent,
                                        View itemSelected, int selectedItemPosition, long selectedId)
             {
+                ((TextView) parent.getChildAt(0)).setTextSize(30);
                 Lang=spinner.getSelectedItem().toString();
                 if(Lang.equals("Русский")) Lang="ru";
                 else Lang="en";
@@ -90,10 +96,47 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
+    protected boolean isOnline()
+    {
+        String cs = Context.CONNECTIVITY_SERVICE;
+        ConnectivityManager cm = (ConnectivityManager)
+                getSystemService(cs);
+        if (cm.getActiveNetworkInfo() == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public void DownloadSave()
+    {
+        if(isOnline())
+        {
+            AsyncTaskForWallet myTask = new AsyncTaskForWallet();
+            myTask.execute();
+        }
+        else
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getResources().getString(R.string.Alert_Title))
+                    .setMessage(getResources().getString(R.string.No_Internet_Connection))
+                    .setCancelable(false)
+                    .setNegativeButton(getResources().getString(R.string.Try_Again_Btn),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id)
+                                {
+                                    DownloadSave();
+                                    dialog.cancel();
+                                }
+                            });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+    }
+
     public void Save(View view)
     {
-        AsyncTaskForWallet myTask = new AsyncTaskForWallet();
-        myTask.execute();
+        DownloadSave();
     }
 
     InterstitialAd mInterstitialAd;
@@ -157,7 +200,26 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
-
+    @Override
+    public void onBackPressed()
+    {
+        Intent intent=new Intent();
+        intent.putExtra("wallet", wallet);
+        intent.putExtra("Lang",Lang);
+        setResult(RESULT_OK, intent);
+        if(MyTimer())
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            ShowAd(intent);
+        }
+        else
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            finish();
+        }
+    }
 
     private class AsyncTaskForWallet extends AsyncTask<String, String, String> {
 

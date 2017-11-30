@@ -23,24 +23,24 @@ public class ShareActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
-        Promo=(TextView)findViewById(R.id.YourPromo);
-        Activ=(TextView)findViewById(R.id.ActivatedApp);
-        Mods=(TextView)findViewById(R.id.Coeff);
+        Promo= findViewById(R.id.YourPromo);
+        Activ= findViewById(R.id.ActivatedApp);
+        Mods= findViewById(R.id.Coeff);
         MobileAds.initialize(getApplicationContext(),"ca-app-pub-7985661347006943~7217309032");
-        AdView myAdView=(AdView)findViewById(R.id.AdShare);
+        AdView myAdView= findViewById(R.id.AdShare);
         AdRequest adRequest=new AdRequest.Builder().build();
         InitInterstitial();
         String time = getIntent().getStringExtra("Date");
         OldDate=new Date(Long.parseLong(time));
         myAdView.loadAd(adRequest);
         Promo.setText(R.string.YourPromo);
-        String promoText= Promo.getText().toString()+getIntent().getStringExtra("Promo");
+        String promoText= Promo.getText().toString()+" "+getIntent().getStringExtra("Promo");
         Promo.setText(promoText);
         Activ.setText(R.string.Activated);
-        String activText= Activ.getText().toString()+getIntent().getStringExtra("Ref");
+        String activText= Activ.getText().toString()+" "+getIntent().getStringExtra("Ref");
         Activ.setText(activText);
         Mods.setText(R.string.Coeff);
-        String modText= Mods.getText().toString()+getIntent().getStringExtra("Mod");
+        String modText= Mods.getText().toString()+" "+getIntent().getStringExtra("Mod");
         Mods.setText(modText);
     }
 
@@ -83,6 +83,25 @@ public class ShareActivity extends AppCompatActivity {
         }
         else finish();
 
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        Intent intent=new Intent();
+        setResult(RESULT_OK, intent);
+        if(MyTimer())
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            ShowAd(intent);
+        }
+        else
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            finish();
+        }
     }
 
     public void BackToMain(View view)

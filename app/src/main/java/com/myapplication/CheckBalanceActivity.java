@@ -40,6 +40,25 @@ public class CheckBalanceActivity extends AppCompatActivity {
         myAdView.loadAd(adRequest);
     }
 
+    @Override
+    public void onBackPressed()
+    {
+        Intent intent=new Intent();
+        setResult(RESULT_OK, intent);
+        if(MyTimer())
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            ShowAd(intent);
+        }
+        else
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            finish();
+        }
+    }
+
     InterstitialAd mInterstitialAd;
     public void InitInterstitial()
     {

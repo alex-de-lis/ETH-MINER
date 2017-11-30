@@ -37,11 +37,11 @@ public class MainActivity extends AppCompatActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        edText=(EditText)findViewById(R.id.ET);
+        edText= findViewById(R.id.ET);
         x=getIntent().getStringExtra("x");
         y=getIntent().getStringExtra("y");
         MobileAds.initialize(getApplicationContext(),"ca-app-pub-7985661347006943~7217309032");
-        AdView myAdView=(AdView)findViewById(R.id.Adregistr);
+        AdView myAdView= findViewById(R.id.Adregistr);
         AdRequest adRequest=new AdRequest.Builder().build();
         myAdView.loadAd(adRequest);
     }

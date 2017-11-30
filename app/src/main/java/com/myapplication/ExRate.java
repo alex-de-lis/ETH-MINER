@@ -25,6 +25,7 @@ public class ExRate extends AppCompatActivity {
         setContentView(R.layout.activity_ex_rate);
         ExText= findViewById(R.id.ExtText);
         String json=getIntent().getStringExtra("json");
+        json=json.substring(0,json.length()-1);
         MobileAds.initialize(getApplicationContext(),"ca-app-pub-7985661347006943~7217309032");
         AdView myAdView= findViewById(R.id.AdExRate);
         InitInterstitial();
@@ -33,6 +34,25 @@ public class ExRate extends AppCompatActivity {
         AdRequest adRequest=new AdRequest.Builder().build();
         myAdView.loadAd(adRequest);
         ExText.setText(json);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        Intent intent=new Intent();
+        setResult(RESULT_OK, intent);
+        if(MyTimer())
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            ShowAd(intent);
+        }
+        else
+        {
+            String time=OldDate.getTime()+"";
+            intent.putExtra("Date",time);
+            finish();
+        }
     }
 
     InterstitialAd mInterstitialAd;
