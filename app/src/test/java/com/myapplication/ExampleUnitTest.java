@@ -1,4 +1,4 @@
-package com.myapplication;
+package com.yaelgrossm.DogeFreeMaker;
 
 import org.junit.Test;
 

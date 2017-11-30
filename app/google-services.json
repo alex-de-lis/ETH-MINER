@@ -8,7 +8,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:641633407721:android:7cb9b2560406e5db",
         "android_client_info": {
-          "package_name": "com.myapplication"
+          "package_name": "com.yaelgrossm.DogeFreeMaker"
         }
       },
       "oauth_client": [
@@ -16,7 +16,7 @@
           "client_id": "641633407721-q06ji2mtg06kemc2o7son9m3t5cc7q5o.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.myapplication",
+            "package_name": "com.yaelgrossm.DogeFreeMaker",
             "certificate_hash": "f4c16c9b927e617babdab9d8516267de879070d3"
           }
         },

@@ -1,4 +1,4 @@
-package com.myapplication;
+package com.yaelgrossm.DogeFreeMaker;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.myapplication", appContext.getPackageName());
+        assertEquals("com.yaelgrossm.DogeFreeMaker", appContext.getPackageName());
     }
 }

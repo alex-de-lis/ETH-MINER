@@ -1,14 +1,14 @@
-package com.myapplication;
+package com.yaelgrossm.DogeFreeMaker;
 
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +26,7 @@ import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+import com.yaelgrossm.DogeFreeMaker.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;

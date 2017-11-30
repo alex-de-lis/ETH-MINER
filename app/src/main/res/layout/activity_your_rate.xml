@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.myapplication.Your_rate">
+    tools:context="com.yaelgrossm.DogeFreeMaker.Your_rate">
 
     <Button
         android:id="@+id/BackFromYourRate"
